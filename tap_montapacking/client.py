@@ -215,6 +215,11 @@ class MontapackingStream(RESTStream):
             if self.config.get("sync_productrule") != None
             else True
         )
+        sync_stocks = (
+            self.config.get("sync_stocks")
+            if self.config.get("sync_stocks") != None
+            else True
+        )
 
         # --- NEW: state-based stream switching ---
         raw_bookmarks = getattr(self._tap, '_raw_bookmark_keys', set())
