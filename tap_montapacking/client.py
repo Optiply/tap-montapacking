@@ -225,16 +225,16 @@ class MontapackingStream(RESTStream):
             (self.name == "products" and not sync_products)
             or (self.name == "suppliers" and not sync_suppliers)
             or (self.name == "orders" and not sync_sell_orders)
-            or (self.name == "inboundforecast_parent" and not sync_buy_orders)
+            or (self.name == "products_stock" and not sync_stocks)
             # If we don't sync buyOrders we also don't need the receiptLines
             or (self.name == "inbounds" and (not sync_receipts or not sync_buy_orders))
             or (self.name == "return_forecast" and not use_return_forecast)
             or (self.name == "productrule" and not sync_productrule)
             # After first sync, skip bulk streams in favour of incremental ones
             or (self.name == "products" and products_initial_sync_done)
-            or (self.name == "inboundforecast_parent" and forecast_initial_sync_done)
+            or (self.name == "inboundforecast_parent" and (forecast_initial_sync_done or not sync_buy_orders))
             # Before first sync is done, skip the incremental streams
-            or (self.name in ("products_stock", "product_events", "products_details") and (not products_initial_sync_done or not sync_products))
+            or (self.name in ("product_events", "products_details") and (not products_initial_sync_done or not sync_products))
             or (self.name in ("inboundforecast_events", "inboundforecastgroup_since_id") and (not forecast_initial_sync_done or not sync_buy_orders))
         ):
             self.logger.info(f"Skipping stream: {self.name}")
