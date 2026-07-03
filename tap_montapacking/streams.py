@@ -897,12 +897,24 @@ class ProductEventsStream(MontapackingStream):
         if not product_sku:
             return None
         
+        encoded_product_sku = quote(product_sku, safe="")
+
+        if "%09" in encoded_product_sku.upper():
+            self.logger.warning(
+                "Skipping products_details for SKU containing encoded tab character. "
+                "EventId=%s Sku=%r EncodedSku=%s",
+                record.get("EventId"),
+                product_sku,
+                encoded_product_sku,
+            )
+            return None
+
         # Only return context for unique Product SKUs to avoid duplicate child stream calls
         if product_sku in self._unique_product_sku:
             return None
         
         self._unique_product_sku.add(product_sku)
-        return {"product_sku": quote(product_sku, safe="")}
+        return {"product_sku": encoded_product_sku}
 
     def _sync_children(self, child_context: dict) -> None:
         if child_context is not None:
